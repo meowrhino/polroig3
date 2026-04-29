@@ -21,8 +21,8 @@ export function createWheel({
   wheelEl,           // .wheel (el elemento que rota)
   projects,          // array de proyectos (orden = slot)
   initialIndex,      // índice del proyecto que arranca en el selector
-  onChange,          // (project, index) => void — llamado al cambiar selección
-  onActivate,        // (project, index) => void — llamado al hacer click en el item activo (no usado por defecto)
+  onPreview,         // (project, index) => void — disparado en cada cambio mentre es gira (drag o keyboard)
+  onSettle,          // (project, index) => void — disparado quan la roda fa snap final
 }) {
   const N = projects.length;
   const wraps = (N === SLOTS);
@@ -46,48 +46,54 @@ export function createWheel({
     wheelEl.style.transform = `rotate(${R}deg)`;
   }
 
-  function updateActive(emit = true) {
-    // ¿qué slot ha quedado bajo el selector?
-    // Necesitamos el K más cercano a (90 - R) / STEP.
+  // Marca quin item està actiu visualment (la classe és_active s'aplica
+  // sempre, amb o sense esdeveniments). Si emit==='preview', dispara
+  // onPreview; si emit==='settle', dispara onSettle (només quan canvia).
+  function updateActive(emit = 'preview') {
     let k = Math.round((90 - R) / STEP);
     if (wraps) k = ((k % SLOTS) + SLOTS) % SLOTS;
     k = Math.max(0, Math.min(N - 1, k));
 
-    if (k !== activeIdx) {
-      activeIdx = k;
-      stageEl.querySelectorAll('.wheel__item').forEach(el => {
-        el.classList.toggle('is-active', Number(el.dataset.index) === k);
-      });
-      if (emit && onChange) onChange(projects[k], k);
-    } else {
-      stageEl.querySelectorAll('.wheel__item').forEach(el => {
-        el.classList.toggle('is-active', Number(el.dataset.index) === k);
-      });
+    const changed = (k !== activeIdx);
+    activeIdx = k;
+    stageEl.querySelectorAll('.wheel__item').forEach(el => {
+      el.classList.toggle('is-active', Number(el.dataset.index) === k);
+    });
+    if (!changed) {
+      // Quan el slot no canvia, només emetem si és un settle: el snap
+      // final ha de re-confirmar el text del preview encara que l'usuari
+      // hagi tornat al mateix slot després d'un drag.
+      if (emit === 'settle' && onSettle) onSettle(projects[k], k);
+      return;
     }
+    if (emit === 'preview' && onPreview) onPreview(projects[k], k);
+    if (emit === 'settle'  && onSettle)  onSettle(projects[k], k);
   }
 
   function snap() {
-    // Snap al múltiplo de STEP más cercano, dentro de bounds.
     let snapped = Math.round(R / STEP) * STEP;
     snapped = clamp(snapped);
     R = snapped;
     wheelEl.classList.remove('is-dragging');
     applyTransform();
-    // Esperar fin de transición para emitir el cambio (visual sincronizado)
-    requestAnimationFrame(() => updateActive());
+    // Esperem el fi de la transició per emetre el "settle" (visual sincronitzat)
+    requestAnimationFrame(() => updateActive('settle'));
   }
 
+  // Click directe en un item: anima el snap i dispara settle (= preview + settle).
   function setIndex(idx, animate = true) {
     idx = Math.max(0, Math.min(N - 1, idx));
     R = clamp(targetR(idx));
     if (!animate) wheelEl.classList.add('is-dragging');
     applyTransform();
     if (!animate) {
-      // forzar reflow y devolver a transition normal
       void wheelEl.offsetHeight;
       wheelEl.classList.remove('is-dragging');
     }
-    updateActive();
+    // Emetem preview de l'estat nou (si hi ha mirilla per actualitzar) i,
+    // tot seguit, settle al snap final.
+    if (onPreview && projects[idx]) onPreview(projects[idx], idx);
+    requestAnimationFrame(() => updateActive('settle'));
   }
 
   // ----- Drag (pointer events) -----
@@ -118,12 +124,15 @@ export function createWheel({
     if (!dragging) return;
     const a = pointAngle(ev);
     let delta = a - startAngle;
-    // normalizar saltos en ±180
+    // normalitzar salts en ±180
     if (delta >  180) delta -= 360;
     if (delta < -180) delta += 360;
     totalMove += Math.abs(delta);
     R = clamp(startR + delta);
     applyTransform();
+    // Mentre arrossegues, emetem onPreview cada cop que el slot sota
+    // el selector canvia (la mirilla s'actualitza en viu).
+    updateActive('preview');
   }
   function onPointerUp(ev) {
     if (!dragging) return;
@@ -146,34 +155,36 @@ export function createWheel({
     if (Number.isFinite(idx)) setIndex(idx);
   });
 
-  // ----- Teclado -----
-  // Registramos un único listener global por ventana, con un puntero
-  // mutable a la rueda activa para evitar acumulación de listeners
-  // cuando la home se remonta (ej. al cambiar idioma).
+  // ----- Teclat -----
+  // Registrem un únic listener al mòdul; actualitzem la referència a la
+  // roda activa cada cop que es crea una de nova (al canviar d'idioma,
+  // p.ex.). Així evitem acumular listeners i no toquem el `window`.
+  const api = { setIndex, getIndex: () => activeIdx };
+  _activeWheel = api;
   installKeyboardListener();
-  window.__activeWheel = { setIndex, getIndex: () => activeIdx };
 
-  // Render inicial
+  // Render inicial — sense emetre cap esdeveniment, només marca actiu.
   applyTransform();
-  updateActive(false);
+  updateActive(null);
 
-  return { setIndex, getIndex: () => activeIdx };
+  return api;
 }
 
+// Estat de mòdul per al listener global de teclat (només a la home).
+let _activeWheel = null;
 let _kbInstalled = false;
 function installKeyboardListener() {
   if (_kbInstalled) return;
   _kbInstalled = true;
   document.addEventListener('keydown', (ev) => {
     if (document.body.dataset.view !== 'home') return;
-    const w = window.__activeWheel;
-    if (!w) return;
+    if (!_activeWheel) return;
     if (ev.key === 'ArrowRight' || ev.key === 'ArrowDown') {
       ev.preventDefault();
-      w.setIndex(w.getIndex() + 1);
+      _activeWheel.setIndex(_activeWheel.getIndex() + 1);
     } else if (ev.key === 'ArrowLeft' || ev.key === 'ArrowUp') {
       ev.preventDefault();
-      w.setIndex(w.getIndex() - 1);
+      _activeWheel.setIndex(_activeWheel.getIndex() - 1);
     }
   });
 }

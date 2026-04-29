@@ -2,7 +2,7 @@
 // Se llama desde app.js con el slug seleccionado y el idioma activo.
 
 import { getData, pickLang, mirillaPath, t, indexOfProject, setFavicon } from './data.js';
-import { toBrailleHTML } from './braille.js';
+import { createHeader } from './header.js';
 import { createWheel } from './wheel.js';
 import { swapMirilla } from './mirilla.js';
 import { createLangFooter } from './lang.js';
@@ -26,15 +26,8 @@ export function renderHome({ root, slug, lang, onNavigateProject, onChangeLang }
   const home = document.createElement('div');
   home.className = 'home';
 
-  // Header
-  const header = document.createElement('header');
-  header.className = 'header';
-  const braille = document.createElement('h1');
-  braille.className = 'braille';
-  braille.setAttribute('aria-label', data.config.titulo_braille);
-  braille.innerHTML = toBrailleHTML(data.config.titulo_braille);
-  header.appendChild(braille);
-  home.appendChild(header);
+  // Header (sense "← tornar" a la home)
+  home.appendChild(createHeader());
 
   // Wheel stage — l'stage és el contenidor que decideix on va el disc;
   // el disc agrupa roda + mirilla + selector i ocupa exactament wheel-size,
@@ -160,22 +153,26 @@ export function renderHome({ root, slug, lang, onNavigateProject, onChangeLang }
   }
 
   // ----- Wheel -----
+  // Dos esdeveniments separats:
+  //   onPreview — disparat en cada slot mentre arrossegues. Toca només
+  //     la mirilla i el favicon (canvi visual ràpid en viu).
+  //   onSettle — disparat al fi del snap. Aleshores canvia el text del
+  //     preview (amb fade) i actualitza la URL.
   const wheel = createWheel({
     stageEl: stage,
     wheelEl,
     projects,
     initialIndex: activeIdx,
-    onChange: (project, idx) => {
+    onPreview: (project, idx) => {
       activeIdx = idx;
-      // 1. Mirilla swap
       swapMirilla(mirilla, mirillaPath(project.slug), true);
       mirilla.href = `#/proyecto/${project.slug}/${lang}`;
       mirilla.setAttribute('aria-label', pickLang(project.nombre, lang));
-      // 2. Preview text fade
-      updatePreview(project, true);
-      // 3. Favicon segueix el projecte actiu
       setFavicon(project.slug);
-      // 4. URL hash (sin disparar full re-render)
+    },
+    onSettle: (project, idx) => {
+      activeIdx = idx;
+      updatePreview(project, true);
       const newHash = `#/${project.slug}/${lang}`;
       if (location.hash !== newHash) {
         history.replaceState(null, '', newHash);

@@ -27,28 +27,28 @@ const state = {
 };
 
 // ---- Parseo del hash ----
-function parseHash() {
-  const raw = (location.hash || '#/').replace(/^#\/?/, '');
+// Parser pur: pren una cadena (per defecte location.hash) i retorna
+// {view, slug, lang}. No toca cap global, així que podem reutilitzar-lo
+// per parsejar hashes hipotètics (links pendents de navegar).
+function parseHash(hash = location.hash) {
+  const raw = (hash || '#/').replace(/^#\/?/, '');
   const parts = raw.split('/').filter(Boolean);
 
   // proyecto/<slug>[/<lang>]
   if (parts[0] === 'proyecto' && parts[1]) {
     return { view: 'proyecto', slug: parts[1], lang: resolveLang(parts[2]) };
   }
-  // <slug>[/<lang>] o solo <lang> o vacío
+  // <slug>[/<lang>] | <lang> sol | buit
   const data = getData();
   const slug0 = parts[0];
   const isLang = (s) => data.config.idiomas.includes(s);
 
-  // <lang> solo (sin slug) — proyecto por defecto (slot 3)
   if (slug0 && isLang(slug0)) {
     return { view: 'home', slug: defaultSlug(), lang: slug0 };
   }
-  // <slug>/<lang>
   if (slug0 && findProject(slug0)) {
     return { view: 'home', slug: slug0, lang: resolveLang(parts[1]) };
   }
-  // fallback
   return { view: 'home', slug: defaultSlug(), lang: resolveLang() };
 }
 
@@ -67,20 +67,11 @@ function applyConfig() {
   document.documentElement.lang = c.idioma_defecto || 'ca';
 }
 
-// ---- Navegación con animación coordinada ----
-async function navigate(target) {
-  const { view, slug, lang } = parseHashFromString(target);
-  await routeTo(view, slug, lang, { fromUserClick: true });
-}
-
-function parseHashFromString(hash) {
-  const tmp = hash.startsWith('#') ? hash : '#' + hash;
-  const old = location.hash;
-  // hack ligero: pisamos location.hash temporalmente y reusamos parseHash
-  history.replaceState(null, '', tmp);
-  const parsed = parseHash();
-  history.replaceState(null, '', old);
-  return parsed;
+// ---- Navegació amb animació coordinada ----
+// Helper per parsejar un hash hipotètic (e.g. l'href d'un link clicat) sense
+// tocar location.hash. Accepta tant "#/foo" com "/foo".
+function parseHashHref(hash) {
+  return parseHash(hash.startsWith('#') ? hash : '#' + hash);
 }
 
 async function routeTo(view, slug, lang, opts = {}) {
@@ -143,7 +134,7 @@ async function routeTo(view, slug, lang, opts = {}) {
 }
 
 async function renderProjectAndReveal(hash) {
-  const { view, slug, lang } = parseHashFromString(hash);
+  const { slug, lang } = parseHashHref(hash);
   await routeTo('proyecto', slug, lang, { revealAfter: true });
 }
 

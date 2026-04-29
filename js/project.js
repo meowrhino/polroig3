@@ -1,14 +1,13 @@
 // project.js — render de la página de un proyecto. Recorre los grupos
 // y monta los sub-bloques presentes (slideshow, título, texto, texto_desplegable).
 
-import { getData, pickLang, findProject, imgPath, t, setFavicon } from './data.js';
-import { toBrailleHTML } from './braille.js';
+import { pickLang, findProject, imgPath, t, setFavicon } from './data.js';
+import { createHeader } from './header.js';
 import { createSlideshow } from './slideshow.js';
 import { createDesplegable } from './desplegable.js';
 import { createLangFooter } from './lang.js';
 
 export function renderProject({ root, slug, lang, onBack, onChangeLang }) {
-  const data = getData();
   const project = findProject(slug);
   if (!project) {
     onBack();
@@ -18,27 +17,10 @@ export function renderProject({ root, slug, lang, onBack, onChangeLang }) {
   root.innerHTML = '';
   setFavicon(slug);
 
-  // Header con "← volver" y braille
-  const header = document.createElement('header');
-  header.className = 'header';
-
-  const back = document.createElement('a');
-  back.className = 'header__volver';
-  back.href = `#/${slug}/${lang}`;
-  back.textContent = `← ${t('volver', lang) || 'volver'}`;
-  back.addEventListener('click', (ev) => {
-    ev.preventDefault();
-    onBack();
-  });
-  header.appendChild(back);
-
-  const braille = document.createElement('h1');
-  braille.className = 'braille';
-  braille.setAttribute('aria-label', data.config.titulo_braille);
-  braille.innerHTML = toBrailleHTML(data.config.titulo_braille);
-  header.appendChild(braille);
-
-  root.appendChild(header);
+  // Header amb "← tornar" + braille (compartit amb la home via header.js)
+  root.appendChild(createHeader({
+    back: { href: `#/${slug}/${lang}`, lang, onClick: onBack },
+  }));
 
   // Main
   const main = document.createElement('main');

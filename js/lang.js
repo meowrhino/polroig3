@@ -1,6 +1,6 @@
-// lang.js — selector de idioma (footer). Genera <nav class="footer">
-// con un botón por idioma. Click cambia el hash a la misma vista pero
-// con el idioma nuevo.
+// lang.js — toggle binari d'idioma al footer.
+// Mostra l'idioma "altre" (al que canviarà al fer click), no l'actual.
+// Si hi ha 3+ idiomes el toggle cicla pel següent de la llista.
 
 import { getData } from './data.js';
 
@@ -9,24 +9,20 @@ export function createLangFooter(currentLang, onChange) {
   const langs = data.config.idiomas;
   const labels = data.i18n[currentLang]?.idiomas || {};
 
+  // Següent idioma a mostrar = el que vindrà al clicar.
+  const idx = langs.indexOf(currentLang);
+  const nextLang = langs[(idx + 1) % langs.length];
+
   const nav = document.createElement('nav');
   nav.className = 'footer';
-  nav.setAttribute('aria-label', 'idiomes');
+  nav.setAttribute('aria-label', 'idioma');
 
-  langs.forEach((lang, idx) => {
-    const btn = document.createElement('button');
-    btn.className = 'lang__btn' + (lang === currentLang ? ' is-active' : '');
-    btn.dataset.lang = lang;
-    btn.textContent = labels[lang] || lang.toUpperCase();
-    btn.addEventListener('click', () => onChange(lang));
-    nav.appendChild(btn);
-    if (idx < langs.length - 1) {
-      const sep = document.createElement('span');
-      sep.className = 'lang__sep';
-      sep.textContent = '·';
-      nav.appendChild(sep);
-    }
-  });
+  const btn = document.createElement('button');
+  btn.className = 'lang__btn';
+  btn.dataset.lang = nextLang;
+  btn.textContent = labels[nextLang] || nextLang;
+  btn.addEventListener('click', () => onChange(nextLang));
 
+  nav.appendChild(btn);
   return nav;
 }

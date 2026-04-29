@@ -29,8 +29,9 @@ a          { color: inherit; text-decoration: none; }
   --swap-dur:      1100ms;     /* mirilla spin + iris-grow */
   --snap-dur:      350ms;      /* snap de la rueda */
 
-  /* Geometría de la rueda — se sobreescribe en desktop */
-  --wheel-size:    min(82vw, 50dvh);
+  /* Geometria de la roda — més petita perquè el selector tingui aire
+     a la dreta i el conjunt quedi notòriament a l'esquerra (com a polroig). */
+  --wheel-size:    min(68vw, 44dvh);
   --mirilla-size:  46%;
   --radius-ratio:  0.92;
 
@@ -42,8 +43,8 @@ a          { color: inherit; text-decoration: none; }
 }
 @media (min-width: 900px) {
   :root {
-    --wheel-size:   min(60vmin, 540px);
-    --mirilla-size: 32%;
+    --wheel-size:   min(48vmin, 440px);
+    --mirilla-size: 36%;
   }
 }
 
@@ -96,21 +97,21 @@ body[data-view="proyecto"] { overflow: auto; }
 .braille {
   display: inline-flex;
   align-items: center;
-  gap: 0.4em;
+  gap: 0.5em;
   color: var(--color-titulo);
   user-select: none;
   cursor: default;          /* no clicable */
-  font-size: clamp(1rem, 3.6dvh, 1.75rem);
+  font-size: clamp(0.7rem, 2.2dvh, 1.05rem);
 }
 .braille-char {
   display: inline-grid;
-  grid-template-columns: 0.28em 0.28em;
-  grid-template-rows: 0.28em 0.28em 0.28em;
+  grid-template-columns: 0.32em 0.32em;
+  grid-template-rows: 0.32em 0.32em 0.32em;
   gap: 0.18em;
 }
 .braille-dot {
-  width: 0.28em;
-  height: 0.28em;
+  width: 0.32em;
+  height: 0.32em;
   border-radius: 50%;
   background: currentColor;
 }
