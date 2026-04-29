@@ -188,16 +188,21 @@ body[data-view="proyecto"] { overflow: auto; }
   top: 0;
   left: 0;
   width: 10rem;
-  transform: translate(-50%, -50%) rotate(-90deg);
-  transform-origin: center;
+  /* Apoyem el bounding box en el slot per un lateral (no centrat): així
+     el text comença al perímetre del cercle i s'estén HACIA AFUERA, mai
+     cap al centre on viu la mirilla.
+       - translate(0%, -50%) → top-left del bounding box al slot point
+         (centrat verticalment respecte al slot)
+       - transform-origin: 0% 50% → rotem al voltant del slot point
+       - rotate(-90deg) → manté el text del slot active llegible
+         (slot rotation 90° + item -90° = 0° en pantalla) */
+  transform: translate(0%, -50%) rotate(-90deg);
+  transform-origin: 0% 50%;
   font-size: clamp(0.65rem, 1.55dvh, 0.95rem);
   letter-spacing: 0.04em;
   color: var(--fg);
-  /* text-align:right perquè, amb el rotate(-90), el "lado dret" del
-     bounding box pre-rotació es mapeja al "lado de fora del wheel" — així
-     els noms s'apoyen al perímetre i no s'apropen a la mirilla central. */
-  text-align: right;
-  text-transform: lowercase;     /* defensiu: per si algun browser/UA no hereta */
+  text-align: left;
+  text-transform: lowercase;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
