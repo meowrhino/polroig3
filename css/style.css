@@ -37,11 +37,14 @@ a          { color: inherit; text-decoration: none; }
   --mirilla-size:  40%;
   --radius-ratio:  0.96;
 
-  /* Reparto vertical de la home (suma 100dvh) */
+  /* Reparto vertical de la home (suma 100dvh).
+     wheel-stage agafa la fracció gran perquè el disc, centrat
+     verticalment dins seu, quedi al centre òptic del viewport.
+     preview es queda compacte (3 línies) i footer petit. */
   --h-header:      8dvh;
-  --h-wheel:       50dvh;
-  --h-preview:     32dvh;
-  --h-footer:      10dvh;
+  --h-wheel:       62dvh;
+  --h-preview:     22dvh;
+  --h-footer:      8dvh;
 }
 @media (min-width: 900px) {
   :root {
