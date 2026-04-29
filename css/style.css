@@ -142,11 +142,13 @@ body[data-view="proyecto"] { overflow: auto; }
   flex: 0 0 var(--h-wheel);
   display: grid;
   /* Roda i mirilla desplaçades cap a l'esquerra perquè el selector
-     triangular tingui aire a la dreta (com el pointer de polroig). */
+     triangular tingui aire a la dreta (com el pointer de polroig).
+     Padding-right ha d'allotjar el text llarg de l'item active (≈6rem)
+     + el selector (≈5rem fora) + un marge mínim (≈1rem). */
   place-items: center start;
   padding-left: clamp(1rem, 4vw, 3rem);
-  padding-right: clamp(2rem, 8vw, 5rem);
-  touch-action: none;       /* el drag de la rueda lo gestionamos en JS */
+  padding-right: clamp(7rem, 12vw, 9rem);
+  touch-action: none;
 }
 
 .wheel-disc {
@@ -211,13 +213,16 @@ body[data-view="proyecto"] { overflow: auto; }
 .wheel__selector {
   position: absolute;
   top: 50%;
-  right: -2.75rem;
+  /* Separat del cercle (5rem) perquè el text de l'item active no
+     pugi amb el triangle. El padding-right de l'stage l'acull dins
+     del seu propi espai a la dreta de la roda. */
+  right: -5rem;
   transform: translate(0, -50%);
   width: 0;
   height: 0;
   border-top:    0.85rem solid transparent;
   border-bottom: 0.85rem solid transparent;
-  border-right:  1.05rem solid var(--color-acento);  /* punta cap a la roda */
+  border-right:  1.05rem solid var(--color-acento);
   pointer-events: none;
 }
 
