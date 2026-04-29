@@ -140,11 +140,13 @@ body[data-view="proyecto"] { overflow: auto; }
 .wheel-stage {
   position: relative;
   flex: 0 0 var(--h-wheel);
-  display: grid;
-  /* place-items: center start — disc centrat verticalment dins del
-     seu 60dvh i alineat a l'esquerra horitzontalment. El padding-right
-     allotja el text actiu llarg + el selector triangular. */
-  place-items: center start;
+  /* Flex en lloc de grid: en grid, place-items centra l'item dins de
+     la seva cel·la (auto = wheel-size), no del contenidor de 60dvh, i
+     el disc queda enganxat dalt. Amb flex, align-items mesura sobre
+     l'alçada total del contenidor → disc realment centrat als 60dvh. */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   padding-left: clamp(1rem, 4vw, 3rem);
   padding-right: clamp(7rem, 12vw, 9rem);
   touch-action: none;
