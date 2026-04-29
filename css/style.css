@@ -187,13 +187,16 @@ body[data-view="proyecto"] { overflow: auto; }
   position: absolute;
   top: 0;
   left: 0;
-  width: 9rem;
+  width: 10rem;
   transform: translate(-50%, -50%) rotate(-90deg);
   transform-origin: center;
   font-size: clamp(0.65rem, 1.55dvh, 0.95rem);
   letter-spacing: 0.04em;
   color: var(--fg);
-  text-align: left;
+  /* text-align:right perquè, amb el rotate(-90), el "lado dret" del
+     bounding box pre-rotació es mapeja al "lado de fora del wheel" — així
+     els noms s'apoyen al perímetre i no s'apropen a la mirilla central. */
+  text-align: right;
   text-transform: lowercase;     /* defensiu: per si algun browser/UA no hereta */
   white-space: nowrap;
   overflow: hidden;
