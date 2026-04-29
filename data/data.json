@@ -5,11 +5,7 @@
     "idioma_defecto": "cat",
     "idiomas": ["cat", "en"],
     "titulo_braille": "pol roig",
-    "dominio": "polroigvalldosera.com",
-    "descripcion_seo": {
-      "cat": "Pol Roig Valldosera — dissenyador d'espai i artista multidisciplinari.",
-      "en": "Pol Roig Valldosera — space designer and multidisciplinary artist."
-    }
+    "dominio": "polroigvalldosera.com"
   },
 
   "i18n": {

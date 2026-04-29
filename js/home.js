@@ -158,7 +158,7 @@ export function renderHome({ root, slug, lang, onNavigateProject, onChangeLang }
   //     la mirilla i el favicon (canvi visual ràpid en viu).
   //   onSettle — disparat al fi del snap. Aleshores canvia el text del
   //     preview (amb fade) i actualitza la URL.
-  const wheel = createWheel({
+  createWheel({
     stageEl: stage,
     wheelEl,
     projects,
@@ -192,7 +192,6 @@ export function renderHome({ root, slug, lang, onNavigateProject, onChangeLang }
       const r = mirilla.getBoundingClientRect();
       return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
     },
-    setIndex: wheel.setIndex,
   };
 }
 

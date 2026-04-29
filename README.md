@@ -28,7 +28,6 @@ polroig3/
 ├── README.md
 ├── robots.txt
 ├── sitemap.xml
-├── CNAME                   # polroigvalldosera.com (per GitHub Pages)
 ├── css/
 │   └── style.css           # Tots els estils (mobile-first, custom props)
 ├── js/
@@ -84,8 +83,7 @@ Tota la informació viu en aquest fitxer.
   "idioma_defecto": "cat",
   "idiomas": ["cat", "en"],
   "titulo_braille": "pol roig",    // El text que es mostrarà en braille a la capçalera
-  "dominio": "polroigvalldosera.com",
-  "descripcion_seo": { "cat": "...", "en": "..." }
+  "dominio": "polroigvalldosera.com"   // Domini de la còpia del client (no usat pel codi; metadata)
 }
 ```
 
@@ -95,8 +93,8 @@ Textos d'interfície traduïts:
 
 ```jsonc
 "i18n": {
-  "cat": { "ver_mas": "veure més", "leer_mas": "llegir més", "leer_menos": "tancar", "volver": "tornar", "idiomas": { "cat": "CAT", "en": "EN" } },
-  "en":  { "ver_mas": "view more", "leer_mas": "read more",  "leer_menos": "close",  "volver": "back",   "idiomas": { "cat": "CAT", "en": "EN" } }
+  "cat": { "ver_mas": "veure més", "leer_mas": "llegir més", "leer_menos": "tancar", "volver": "tornar", "idiomas": { "cat": "cat", "en": "en" } },
+  "en":  { "ver_mas": "view more", "leer_mas": "read more",  "leer_menos": "close",  "volver": "back",   "idiomas": { "cat": "cat", "en": "en" } }
 }
 ```
 
@@ -222,10 +220,11 @@ Tot respecta `prefers-reduced-motion: reduce` i salta a l'estat final sense anim
 
 1. Push del repo a GitHub.
 2. Settings → Pages → Source: `main` branch, root.
-3. El fitxer `CNAME` ja apunta a `polroigvalldosera.com`.
-4. Al teu DNS, afegir un `CNAME` apuntant a `<usuari>.github.io`, o un `A`
-   record a les IPs de GitHub Pages. (HTTPS: marcar "Enforce HTTPS" un cop
-   propagat.)
+3. El repo viu, per defecte, a `https://<usuari>.github.io/<repo>/`.
+4. Per a un domini propi (la copia del client): afegir un fitxer `CNAME`
+   amb el domini, configurar el DNS (`CNAME` apuntant a `<usuari>.github.io`
+   o `A` records a les IPs de GitHub Pages) i marcar "Enforce HTTPS" un
+   cop propagat.
 
 També funciona en qualsevol host estàtic (Netlify, Vercel, Cloudflare Pages)
 sense modificacions, ja que no hi ha build.
@@ -235,13 +234,16 @@ sense modificacions, ja que no hi ha build.
 ## SEO
 
 - `index.html` té `<title>`, `description`, OG, Twitter card, hreflang i
-  `canonical` apuntant a `polroigvalldosera.com`.
+  `canonical`. Per defecte apunten al deploy del repo a GitHub Pages
+  (`meowrhino.github.io/polroig3/`); el `robots.txt` i `data.json`
+  (`config.dominio`) referencien el domini que farà servir el client a
+  la seva còpia.
 - `sitemap.xml` llista la home i una entrada per projecte (URLs amb hash;
   els crawlers moderns les indexen).
 - `robots.txt` permet tot.
 - Si afegeixes un projecte, recorda afegir-lo també a `sitemap.xml`.
 - Si canvies de domini, actualitza `index.html` (canonical, OG, hreflang),
-  `sitemap.xml`, `robots.txt` i `CNAME`.
+  `sitemap.xml`, `robots.txt` i afegeix un fitxer `CNAME` amb el domini.
 
 ---
 
