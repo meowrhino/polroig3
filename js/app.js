@@ -74,6 +74,20 @@ function parseHashHref(hash) {
   return parseHash(hash.startsWith('#') ? hash : '#' + hash);
 }
 
+// Rerender amb fade — usat al canviar d'idioma per evitar el flash sec.
+// El fade s'aplica al #app (no a l'iris ni al body) durant ~200ms i es
+// recupera després que routeTo hagi muntat la nova vista.
+const FADE_DUR = 200;
+async function routeToWithFade(view, slug, lang, opts = {}) {
+  root.classList.add('is-fading');
+  await new Promise(r => setTimeout(r, FADE_DUR));
+  await routeTo(view, slug, lang, opts);
+  // Forcem un reflow perquè el browser apliqui l'opacity:0 abans de quitar
+  // la classe (sinó el navegador pot saltar-se la transició d'entrada).
+  void root.offsetHeight;
+  root.classList.remove('is-fading');
+}
+
 async function routeTo(view, slug, lang, opts = {}) {
   document.body.dataset.view = view;
   state.view = view;
@@ -93,7 +107,7 @@ async function routeTo(view, slug, lang, opts = {}) {
       onChangeLang: (newLang) => {
         const newHash = `#/${slug}/${newLang}`;
         history.replaceState(null, '', newHash);
-        routeTo('home', slug, newLang);
+        routeToWithFade('home', slug, newLang);
       },
     });
 
@@ -121,7 +135,7 @@ async function routeTo(view, slug, lang, opts = {}) {
       onChangeLang: (newLang) => {
         const newHash = `#/proyecto/${slug}/${newLang}`;
         history.replaceState(null, '', newHash);
-        routeTo('proyecto', slug, newLang);
+        routeToWithFade('proyecto', slug, newLang);
       },
     });
 

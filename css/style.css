@@ -65,7 +65,9 @@ body {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  transition: opacity 200ms var(--ease-soft);
 }
+.app.is-fading { opacity: 0; }
 
 /* la home no scrollea; la página de proyecto sí */
 body[data-view="home"]    { overflow: hidden; }
@@ -172,20 +174,26 @@ body[data-view="proyecto"] { overflow: auto; }
   transform-origin: 0 0;
 }
 
-/* Item: el botón clickable. Vive dentro del slot, se centra sobre él y
-   rota -90º para que el texto salga como un rayo de sol del centro
-   hacia fuera (en los slots 0..5 — la mitad derecha — se lee
-   naturalmente de izquierda a derecha cuando inclinas la cabeza). */
+/* Item: el botó clicable. Viu dins del slot i es centra sobre ell.
+   Width fixa + text-align:left perquè els noms quedin alineats a
+   l'esquerra del seu bounding box (no centrats al slot). El rotate(-90)
+   fa que al slot 3 (selector) el text es llegeixi horitzontal i als
+   altres slots quedi com un raig de sol radial. */
 .wheel__item {
   position: absolute;
   top: 0;
   left: 0;
+  width: 11rem;
   transform: translate(-50%, -50%) rotate(-90deg);
   transform-origin: center;
   font-size: clamp(0.65rem, 1.55dvh, 0.95rem);
   letter-spacing: 0.04em;
   color: var(--fg);
+  text-align: left;
+  text-transform: lowercase;     /* defensiu: per si algun browser/UA no hereta */
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   opacity: 0.55;
   cursor: pointer;
   padding: 0.25rem 0.4rem;
@@ -199,13 +207,13 @@ body[data-view="proyecto"] { overflow: auto; }
 .wheel__selector {
   position: absolute;
   top: 50%;
-  right: -1.75rem;
+  right: -2.75rem;
   transform: translate(0, -50%);
   width: 0;
   height: 0;
-  border-top:    0.75rem solid transparent;
-  border-bottom: 0.75rem solid transparent;
-  border-right:  0.95rem solid var(--color-acento);  /* punta cap a la roda */
+  border-top:    0.85rem solid transparent;
+  border-bottom: 0.85rem solid transparent;
+  border-right:  1.05rem solid var(--color-acento);  /* punta cap a la roda */
   pointer-events: none;
 }
 
