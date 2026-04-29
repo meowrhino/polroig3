@@ -30,10 +30,12 @@ a          { color: inherit; text-decoration: none; }
   --snap-dur:      350ms;      /* snap de la rueda */
 
   /* Geometria de la roda — més petita perquè el selector tingui aire
-     a la dreta i el conjunt quedi notòriament a l'esquerra (com a polroig). */
-  --wheel-size:    min(68vw, 44dvh);
-  --mirilla-size:  46%;
-  --radius-ratio:  0.92;
+     a la dreta i el conjunt quedi notòriament a l'esquerra (com a polroig).
+     radius-ratio 0.98 apropa els slots al perímetre perquè el text
+     dels items no es solapi amb la mirilla central. */
+  --wheel-size:    min(72vw, 48dvh);
+  --mirilla-size:  36%;
+  --radius-ratio:  0.98;
 
   /* Reparto vertical de la home (suma 100dvh) */
   --h-header:      8dvh;
@@ -43,9 +45,31 @@ a          { color: inherit; text-decoration: none; }
 }
 @media (min-width: 900px) {
   :root {
-    --wheel-size:   min(48vmin, 440px);
-    --mirilla-size: 36%;
+    --wheel-size:   min(56vmin, 520px);
+    --mirilla-size: 32%;
   }
+
+  /* Layout desktop: 70dvw a l'esquerra per al "disc" (roda + mirilla
+     + selector triangular) i 30dvw a la dreta per al text del preview.
+     Header (braille) ocupa la fila de dalt; footer (idioma) la d'abaix. */
+  .home {
+    display: grid;
+    grid-template-columns: 70dvw 30dvw;
+    grid-template-rows: var(--h-header) 1fr var(--h-footer);
+    grid-template-areas:
+      "header  header"
+      "wheel   preview"
+      "footer  footer";
+    height: 100dvh;
+  }
+  .home > .header      { grid-area: header; }
+  .home > .wheel-stage { grid-area: wheel;   flex: none; height: auto; }
+  .home > .preview     { grid-area: preview; flex: none; height: auto; align-items: center; text-align: left; padding: 1.5rem 2rem; }
+  .home > .footer      { grid-area: footer;  flex: none; height: auto; }
+
+  /* Preview: text alineat a l'esquerra de la columna i no centrat */
+  .preview__inner { text-align: left; max-width: 100%; }
+  .preview__text  { -webkit-line-clamp: 6; }
 }
 
 * { font-family: var(--font-serif); }
@@ -183,7 +207,7 @@ body[data-view="proyecto"] { overflow: auto; }
   position: absolute;
   top: 0;
   left: 0;
-  width: 11rem;
+  width: 9rem;
   transform: translate(-50%, -50%) rotate(-90deg);
   transform-origin: center;
   font-size: clamp(0.65rem, 1.55dvh, 0.95rem);
