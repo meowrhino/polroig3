@@ -1,8 +1,8 @@
 // home.js — monta la vista de home: header braille + rueda + mirilla + preview + footer.
 // Se llama desde app.js con el slug seleccionado y el idioma activo.
 
-import { getData, pickLang, mirillaPath, t, indexOfProject } from './data.js';
-import { toBraille } from './braille.js';
+import { getData, pickLang, mirillaPath, t, indexOfProject, setFavicon } from './data.js';
+import { toBrailleHTML } from './braille.js';
 import { createWheel } from './wheel.js';
 import { swapMirilla } from './mirilla.js';
 import { createLangFooter } from './lang.js';
@@ -32,13 +32,18 @@ export function renderHome({ root, slug, lang, onNavigateProject, onChangeLang }
   const braille = document.createElement('h1');
   braille.className = 'braille';
   braille.setAttribute('aria-label', data.config.titulo_braille);
-  braille.textContent = toBraille(data.config.titulo_braille);
+  braille.innerHTML = toBrailleHTML(data.config.titulo_braille);
   header.appendChild(braille);
   home.appendChild(header);
 
-  // Wheel stage
+  // Wheel stage — l'stage és el contenidor que decideix on va el disc;
+  // el disc agrupa roda + mirilla + selector i ocupa exactament wheel-size,
+  // així es desplacen junts cap a l'esquerra sense desalinear-se.
   const stage = document.createElement('div');
   stage.className = 'wheel-stage';
+
+  const disc = document.createElement('div');
+  disc.className = 'wheel-disc';
 
   const wheelEl = document.createElement('div');
   wheelEl.className = 'wheel';
@@ -62,12 +67,12 @@ export function renderHome({ root, slug, lang, onNavigateProject, onChangeLang }
     wheelEl.appendChild(slot);
   });
 
-  stage.appendChild(wheelEl);
+  disc.appendChild(wheelEl);
 
   // Selector triangular
   const sel = document.createElement('div');
   sel.className = 'wheel__selector';
-  stage.appendChild(sel);
+  disc.appendChild(sel);
 
   // Mirilla central (es un <a> que navega al proyecto)
   const mirilla = document.createElement('a');
@@ -78,12 +83,16 @@ export function renderHome({ root, slug, lang, onNavigateProject, onChangeLang }
   const mirillaImg = document.createElement('img');
   mirillaImg.className = 'mirilla__img';
   mirillaImg.alt = '';
-  // Si el fichero no existe (todavía no se han generado mirillas), quitamos
-  // el src para que CSS muestre el gradiente de fallback.
   mirillaImg.addEventListener('error', () => mirillaImg.removeAttribute('src'));
   mirillaImg.src = mirillaPath(activeProject.slug);
   mirilla.appendChild(mirillaImg);
-  stage.appendChild(mirilla);
+
+  const mirillaIris = document.createElement('div');
+  mirillaIris.className = 'mirilla__iris';
+  mirilla.appendChild(mirillaIris);
+
+  disc.appendChild(mirilla);
+  stage.appendChild(disc);
 
   home.appendChild(stage);
 
@@ -164,7 +173,9 @@ export function renderHome({ root, slug, lang, onNavigateProject, onChangeLang }
       mirilla.setAttribute('aria-label', pickLang(project.nombre, lang));
       // 2. Preview text fade
       updatePreview(project, true);
-      // 3. URL hash (sin disparar full re-render)
+      // 3. Favicon segueix el projecte actiu
+      setFavicon(project.slug);
+      // 4. URL hash (sin disparar full re-render)
       const newHash = `#/${project.slug}/${lang}`;
       if (location.hash !== newHash) {
         history.replaceState(null, '', newHash);
@@ -172,8 +183,9 @@ export function renderHome({ root, slug, lang, onNavigateProject, onChangeLang }
     },
   });
 
-  // Render inicial del preview (sin animación)
+  // Render inicial del preview (sin animación) i favicon de l'actiu
   updatePreview(activeProject, false);
+  setFavicon(activeProject.slug);
 
   // Si la home se abre con iris activo (porque venimos de un proyecto), el
   // app.js se encargará de llamar a Iris.uncover; no es responsabilidad de home.

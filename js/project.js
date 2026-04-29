@@ -1,8 +1,8 @@
 // project.js — render de la página de un proyecto. Recorre los grupos
 // y monta los sub-bloques presentes (slideshow, título, texto, texto_desplegable).
 
-import { getData, pickLang, findProject, imgPath, t } from './data.js';
-import { toBraille } from './braille.js';
+import { getData, pickLang, findProject, imgPath, t, setFavicon } from './data.js';
+import { toBrailleHTML } from './braille.js';
 import { createSlideshow } from './slideshow.js';
 import { createDesplegable } from './desplegable.js';
 import { createLangFooter } from './lang.js';
@@ -16,6 +16,7 @@ export function renderProject({ root, slug, lang, onBack, onChangeLang }) {
   }
 
   root.innerHTML = '';
+  setFavicon(slug);
 
   // Header con "← volver" y braille
   const header = document.createElement('header');
@@ -34,7 +35,7 @@ export function renderProject({ root, slug, lang, onBack, onChangeLang }) {
   const braille = document.createElement('h1');
   braille.className = 'braille';
   braille.setAttribute('aria-label', data.config.titulo_braille);
-  braille.textContent = toBraille(data.config.titulo_braille);
+  braille.innerHTML = toBrailleHTML(data.config.titulo_braille);
   header.appendChild(braille);
 
   root.appendChild(header);

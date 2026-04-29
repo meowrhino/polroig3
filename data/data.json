@@ -13,8 +13,8 @@
   },
 
   "i18n": {
-    "cat": { "ver_mas": "veure més", "leer_mas": "llegir més", "leer_menos": "tancar", "volver": "tornar", "idiomas": { "cat": "CAT", "en": "EN" } },
-    "en":  { "ver_mas": "view more", "leer_mas": "read more",  "leer_menos": "close",  "volver": "back",   "idiomas": { "cat": "CAT", "en": "EN" } }
+    "cat": { "ver_mas": "veure més", "leer_mas": "llegir més", "leer_menos": "tancar", "volver": "tornar", "idiomas": { "cat": "cat", "en": "en" } },
+    "en":  { "ver_mas": "view more", "leer_mas": "read more",  "leer_menos": "close",  "volver": "back",   "idiomas": { "cat": "cat", "en": "en" } }
   },
 
   "proyectos": [

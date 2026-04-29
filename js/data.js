@@ -57,3 +57,11 @@ export function imgPath(slug, filename) {
 export function t(key, lang) {
   return _data?.i18n?.[lang]?.[key] ?? '';
 }
+
+// Actualitza el <link rel="icon" id="favicon"> amb la mirilla del slug.
+// Si l'index no té un id="favicon", agafa el primer rel="icon".
+export function setFavicon(slug) {
+  const link = document.getElementById('favicon')
+            || document.querySelector('link[rel="icon"]');
+  if (link) link.href = mirillaPath(slug);
+}

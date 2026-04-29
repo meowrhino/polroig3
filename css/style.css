@@ -54,6 +54,8 @@ body {
   color: var(--fg);
   -webkit-font-smoothing: antialiased;
   font-feature-settings: "kern" 1, "liga" 1;
+  /* Sense majúscules a tota la web — fail-safe per si algun text les porta */
+  text-transform: lowercase;
 }
 
 
@@ -92,12 +94,33 @@ body[data-view="proyecto"] { overflow: auto; }
 .header__volver:hover { opacity: 0.65; }
 
 .braille {
-  font-size: clamp(1rem, 3.6dvh, 1.75rem);
-  letter-spacing: 0.08em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
   color: var(--color-titulo);
   user-select: none;
   cursor: default;          /* no clicable */
+  font-size: clamp(1rem, 3.6dvh, 1.75rem);
 }
+.braille-char {
+  display: inline-grid;
+  grid-template-columns: 0.28em 0.28em;
+  grid-template-rows: 0.28em 0.28em 0.28em;
+  gap: 0.18em;
+}
+.braille-dot {
+  width: 0.28em;
+  height: 0.28em;
+  border-radius: 50%;
+  background: currentColor;
+}
+.braille-dot[data-pos="1"] { grid-column: 1; grid-row: 1; }
+.braille-dot[data-pos="2"] { grid-column: 1; grid-row: 2; }
+.braille-dot[data-pos="3"] { grid-column: 1; grid-row: 3; }
+.braille-dot[data-pos="4"] { grid-column: 2; grid-row: 1; }
+.braille-dot[data-pos="5"] { grid-column: 2; grid-row: 2; }
+.braille-dot[data-pos="6"] { grid-column: 2; grid-row: 3; }
+.braille-space { width: 0.5em; }
 
 
 /* -------------------- 4. Home: rueda --------------------- */
@@ -111,14 +134,23 @@ body[data-view="proyecto"] { overflow: auto; }
   position: relative;
   flex: 0 0 var(--h-wheel);
   display: grid;
-  place-items: center;
+  /* Roda i mirilla desplaçades cap a l'esquerra perquè el selector
+     triangular tingui aire a la dreta (com el pointer de polroig). */
+  place-items: center start;
+  padding-left: clamp(1rem, 4vw, 3rem);
+  padding-right: clamp(2rem, 8vw, 5rem);
   touch-action: none;       /* el drag de la rueda lo gestionamos en JS */
 }
 
-.wheel {
+.wheel-disc {
   position: relative;
   width: var(--wheel-size);
   height: var(--wheel-size);
+}
+
+.wheel {
+  position: absolute;
+  inset: 0;
   border-radius: 50%;
   transition: transform var(--snap-dur) var(--ease-spring);
   will-change: transform;
@@ -161,17 +193,18 @@ body[data-view="proyecto"] { overflow: auto; }
 .wheel__item:hover         { opacity: 0.9; }
 .wheel__item.is-active     { opacity: 1; color: var(--color-acento); }
 
-/* Selector triangular a la derecha (3 o'clock) */
+/* Selector triangular a la dreta (3 o'clock), separat del cercle perquè
+   tingui aire (el disc està desplaçat a l'esquerra a l'stage). */
 .wheel__selector {
   position: absolute;
   top: 50%;
-  right: calc(50% - var(--wheel-size) / 2 - 0.25rem);
+  right: -1.75rem;
   transform: translate(0, -50%);
   width: 0;
   height: 0;
-  border-top:    0.6rem solid transparent;
-  border-bottom: 0.6rem solid transparent;
-  border-right:  0.7rem solid var(--color-acento);  /* punta hacia la rueda */
+  border-top:    0.75rem solid transparent;
+  border-bottom: 0.75rem solid transparent;
+  border-right:  0.95rem solid var(--color-acento);  /* punta cap a la roda */
   pointer-events: none;
 }
 
@@ -210,8 +243,20 @@ body[data-view="proyecto"] { overflow: auto; }
 .mirilla__img:not([src]),
 .mirilla__img[src=""] { display: none; }
 
-/* Capa que aparece encima durante el swap, con la imagen siguiente.
-   La animación iris-grow descubre la nueva imagen desde el centro. */
+/* Swap de polroig2 — dues capes:
+   1) .mirilla__iris: iris negre que creix des del centre (tapa la imatge vella)
+   2) .mirilla::after: capa amb la imatge nova que també creix des del centre
+   La nova imatge va lleugerament endarrerida (150ms) perquè es vegi primer
+   el negre i després aparegui el contingut nou. Mentrestant, tota la mirilla
+   gira 360°. */
+.mirilla__iris {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  pointer-events: none;
+  clip-path: circle(0% at 50% 50%);
+  z-index: 1;
+}
 .mirilla::after {
   content: "";
   position: absolute;
@@ -221,12 +266,14 @@ body[data-view="proyecto"] { overflow: auto; }
   background-position: center;
   clip-path: circle(0% at 50% 50%);
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
 }
 
-/* Estado swap: spin de toda la mirilla + iris-grow del overlay */
 .mirilla.is-swapping {
   animation: mirilla-spin var(--swap-dur) var(--ease-soft);
+}
+.mirilla.is-swapping .mirilla__iris {
+  animation: iris-grow 950ms var(--ease-soft) forwards;
 }
 .mirilla.is-swapping::after {
   animation: iris-grow 950ms 150ms var(--ease-soft) forwards;
@@ -291,11 +338,9 @@ body[data-view="proyecto"] { overflow: auto; }
   letter-spacing: 0.06em;
   color: var(--muted);
   padding: 0.25rem 0.4rem;
-  border-bottom: 1px solid transparent;
-  transition: color 0.2s var(--ease-soft), border-color 0.2s var(--ease-soft);
+  transition: color 0.2s var(--ease-soft);
 }
-.lang__btn:hover            { color: var(--fg); }
-.lang__btn.is-active        { color: var(--color-acento); border-bottom-color: var(--color-acento); }
+.lang__btn.is-active        { color: var(--color-acento); }
 .lang__sep                  { color: var(--muted); user-select: none; }
 
 
