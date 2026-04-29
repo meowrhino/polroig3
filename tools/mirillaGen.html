@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="generador de mirillas para el portfolio de pol roig. convierte imágenes en mirillas ojo-de-pez directamente en el navegador, sin subir nada al servidor.">
+  <title>generador de mirillas · pol roig</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inknut+Antiqua:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #ffffff;
+      --card: #ffffff;
+      --text: #000000;
+      --text-muted: #999999;
+      --border: rgba(0, 0, 0, 0.12);
+      --border-hover: rgba(0, 0, 0, 0.35);
+      --success: #059669;
+      --error: #dc2626;
+      --radius: 4px;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      font-family: 'Inknut Antiqua', Georgia, 'Times New Roman', serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      letter-spacing: 0.03em;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .container { width: 100%; max-width: 960px; margin: 0 auto; }
+
+    .intro { text-align: center; margin-bottom: 2rem; }
+    .intro h1 { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 0.6rem; }
+    .intro p  { font-size: 0.7rem; color: var(--text-muted); max-width: 540px; margin: 0 auto; }
+    .intro .hint { margin-top: 0.6rem; opacity: 0.7; }
+
+    .upload-area {
+      background: var(--card);
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 3rem 2rem;
+      text-align: center;
+      margin: 1.5rem 0;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .upload-area:hover           { border-color: var(--border-hover); }
+    .upload-area.drag-over       { border-color: var(--text); border-style: solid; }
+    .upload-icon                 { color: var(--text-muted); margin-bottom: 1rem; }
+    .upload-area h3              { font-size: 1.05rem; font-weight: 500; margin-bottom: 0.5rem; }
+    .upload-area p               { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.7rem; }
+
+    .btn-primary {
+      padding: 0.6rem 1.4rem;
+      background: var(--text);
+      color: var(--bg);
+      border: 1px solid var(--text);
+      border-radius: var(--radius);
+      font-size: 0.7rem;
+      font-weight: 600;
+      font-family: inherit;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-primary:hover { background: #333; border-color: #333; }
+
+    .btn-secondary {
+      padding: 0.5rem 1.2rem;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.65rem;
+      font-weight: 600;
+      font-family: inherit;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-secondary:hover { border-color: var(--border-hover); }
+
+    .btn-download {
+      padding: 0.4rem 0.9rem;
+      background: var(--text);
+      color: var(--bg);
+      border: 1px solid var(--text);
+      border-radius: var(--radius);
+      font-size: 0.6rem;
+      font-weight: 600;
+      font-family: inherit;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      flex: 1;
+      transition: all 0.2s ease;
+    }
+    .btn-download:hover { background: #333; border-color: #333; }
+
+    .btn-remove {
+      padding: 0.4rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      color: var(--text-muted);
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .btn-remove:hover { border-color: var(--error); color: var(--error); }
+
+    .settings {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem 1.25rem;
+      padding: 1rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin: 1rem 0 2rem;
+    }
+    .settings label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.05em; }
+    .settings label > span { font-weight: 600; }
+
+    .settings select,
+    .settings input[type="range"] { font-family: inherit; font-size: 0.65rem; color: var(--text); }
+    .settings select { padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); cursor: pointer; }
+    .settings select:focus { outline: none; border-color: var(--border-hover); }
+
+    .settings .toggle {
+      grid-column: 1 / -1;
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.65rem; color: var(--text);
+      cursor: pointer;
+    }
+    .settings .toggle input { accent-color: var(--text); }
+
+    .slider-row { display: flex; align-items: center; gap: 0.5rem; }
+    .slider-row input[type="range"] { flex: 1; accent-color: var(--text); }
+    .slider-row output { font-size: 0.6rem; color: var(--text); font-weight: 600; min-width: 2.5rem; text-align: right; }
+
+    .results-grid { margin: 2rem 0; }
+    .grid-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .grid-header h3 { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); }
+
+    .results-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; }
+
+    .result-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: all 0.2s ease;
+    }
+    .result-card:hover {
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+
+    .preview-pair { display: grid; grid-template-columns: 1fr 1fr; background: #fafafa; }
+    .preview-pair > div { position: relative; aspect-ratio: 1; overflow: hidden; }
+    .preview-pair img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .preview-pair .tag {
+      position: absolute; top: 0.4rem; left: 0.4rem;
+      font-size: 0.5rem; letter-spacing: 0.1em;
+      background: rgba(255,255,255,0.9);
+      padding: 0.15rem 0.4rem;
+      border-radius: 2px;
+      font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .card-info { padding: 0.85rem; }
+    .card-name { font-size: 0.65rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .card-name input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: transparent;
+      padding: 0.25rem 0.4rem;
+      font-family: inherit; font-size: 0.65rem; font-weight: 600;
+      color: var(--text); letter-spacing: 0.03em;
+    }
+    .card-name input:focus { outline: none; border-color: var(--border-hover); }
+    .card-name input:disabled { color: var(--text-muted); cursor: not-allowed; }
+
+    .card-stats { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.75rem; }
+    .stat-row { display: flex; justify-content: space-between; font-size: 0.6rem; }
+    .stat-label { color: var(--text-muted); }
+    .stat-value { color: var(--text); font-weight: 500; }
+    .stat-value.is-positive { color: var(--success); }
+    .stat-value.is-negative { color: var(--error); }
+
+    .card-actions { display: flex; gap: 0.4rem; }
+
+    .progress-container { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1rem; margin: 1rem 0 2rem; box-shadow: var(--shadow); }
+    .progress-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-size: 0.65rem; color: var(--text-muted); }
+    .progress-info span:last-child { font-weight: 600; color: var(--text); }
+    .progress-bar { width: 100%; height: 3px; background: rgba(0,0,0,0.06); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: var(--text); border-radius: 2px; transition: width 0.3s ease; }
+
+    .notification {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.65rem 1rem;
+      box-shadow: var(--shadow-hover);
+      max-width: 360px;
+      font-size: 0.65rem; font-family: inherit; letter-spacing: 0.03em;
+      opacity: 0; transform: translateY(0.5rem);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+    .notification.show { opacity: 1; transform: translateY(0); }
+    .notification-success { border-left: 3px solid var(--success); }
+    .notification-error   { border-left: 3px solid var(--error); }
+    .notification-info    { border-left: 3px solid var(--text); }
+
+    .branding-badge { margin-top: auto; text-align: center; font-size: 0.65rem; padding: 2rem 0 1.5rem; }
+    .branding-badge a { color: var(--text-muted); font-weight: 600; text-decoration: none; letter-spacing: 0.05em; transition: color 0.2s ease; }
+    .branding-badge a:hover { color: var(--text); }
+
+    @media (max-width: 768px) {
+      .upload-area { padding: 2rem 1rem; }
+      .results-list { grid-template-columns: 1fr; }
+      .grid-header { flex-direction: column; align-items: stretch; }
+      .notification { right: 1rem; left: 1rem; max-width: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="intro">
+      <h1>generador de mirillas</h1>
+      <p>efecto ojo de pez sobre una imagen cuadrada: centro nítido, bordes desenfocados, viñeta oscura. todo sucede en tu navegador, sin subir nada.</p>
+      <p class="hint">arrastra · selecciona · pega con cmd/ctrl+v</p>
+    </header>
+
+    <div class="upload-area" id="uploadArea">
+      <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="9"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+      <h3>arrastra imágenes aquí</h3>
+      <p>jpg · png · webp · avif</p>
+      <button class="btn-primary" id="selectBtn">seleccionar archivos</button>
+      <input type="file" id="fileInput" accept="image/jpeg,image/jpg,image/png,image/webp,image/avif" multiple hidden>
+    </div>
+
+    <div class="settings" id="settings" style="display:none">
+      <label>
+        <span>tamaño</span>
+        <select id="sizeSelect">
+          <option value="512">512 px</option>
+          <option value="1024" selected>1024 px</option>
+          <option value="2048">2048 px</option>
+        </select>
+      </label>
+      <label>
+        <span>calidad webp</span>
+        <select id="qualitySelect">
+          <option value="0.70">70%</option>
+          <option value="0.80">80%</option>
+          <option value="0.82" selected>82%</option>
+          <option value="0.90">90%</option>
+          <option value="1.00">100%</option>
+        </select>
+      </label>
+      <label>
+        <span>desenfoque</span>
+        <div class="slider-row">
+          <input type="range" id="blurRange" min="0" max="80" value="44" step="1">
+          <output id="blurValue">44</output>
+        </div>
+      </label>
+      <label>
+        <span>centro nítido</span>
+        <div class="slider-row">
+          <input type="range" id="sharpRange" min="0" max="60" value="28" step="1">
+          <output id="sharpValue">28%</output>
+        </div>
+      </label>
+      <label>
+        <span>viñeta</span>
+        <div class="slider-row">
+          <input type="range" id="vignetteRange" min="0" max="100" value="75" step="5">
+          <output id="vignetteValue">75%</output>
+        </div>
+      </label>
+      <label>
+        <span>inicio viñeta</span>
+        <div class="slider-row">
+          <input type="range" id="vignetteStartRange" min="0" max="90" value="50" step="5">
+          <output id="vignetteStartValue">50%</output>
+        </div>
+      </label>
+      <label class="toggle">
+        <input type="checkbox" id="seqRenameToggle">
+        renombrar secuencial: mirilla-1.webp, mirilla-2.webp…
+      </label>
+    </div>
+
+    <div id="progressContainer" class="progress-container" style="display:none">
+      <div class="progress-info">
+        <span id="progressText">generando...</span>
+        <span id="progressCount">0/0</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <div id="resultsContainer" class="results-grid" style="display:none">
+      <div class="grid-header">
+        <h3 id="resultCount">0 mirillas</h3>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+          <button class="btn-secondary" id="regenerateBtn">regenerar todo</button>
+          <button class="btn-secondary" id="downloadAllBtn">descargar todo (zip)</button>
+        </div>
+      </div>
+      <div id="resultsList" class="results-list"></div>
+    </div>
+  </div>
+
+  <div class="branding-badge">
+    <a href="../">← volver al portfolio</a>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script>
+    /* =====================================================================
+       Generador de mirillas — pol roig 3
+       Pipeline en canvas:
+         1. crop cuadrado centrado (cover)
+         2. versión desenfocada (blur)
+         3. máscara radial: opaco fuera, transparente dentro → centro nítido
+         4. viñeta oscura radial encima
+         5. canvas.toBlob('image/webp', quality)
+       ===================================================================== */
+
+    const uploadArea    = document.getElementById('uploadArea');
+    const fileInput     = document.getElementById('fileInput');
+    const selectBtn     = document.getElementById('selectBtn');
+    const settings      = document.getElementById('settings');
+    const resultsC      = document.getElementById('resultsContainer');
+    const resultsList   = document.getElementById('resultsList');
+    const resultCount   = document.getElementById('resultCount');
+    const progressC     = document.getElementById('progressContainer');
+    const progressText  = document.getElementById('progressText');
+    const progressCount = document.getElementById('progressCount');
+    const progressFill  = document.getElementById('progressFill');
+    const downloadAllBtn= document.getElementById('downloadAllBtn');
+    const regenerateBtn = document.getElementById('regenerateBtn');
+
+    const sizeSelect    = document.getElementById('sizeSelect');
+    const qualitySelect = document.getElementById('qualitySelect');
+    const blurRange     = document.getElementById('blurRange');
+    const blurValue     = document.getElementById('blurValue');
+    const sharpRange    = document.getElementById('sharpRange');
+    const sharpValue    = document.getElementById('sharpValue');
+    const vignetteRange = document.getElementById('vignetteRange');
+    const vignetteValue = document.getElementById('vignetteValue');
+    const vignetteStartRange = document.getElementById('vignetteStartRange');
+    const vignetteStartValue = document.getElementById('vignetteStartValue');
+    const seqRenameToggle = document.getElementById('seqRenameToggle');
+
+    const state = { items: [] };
+
+    /* ---------- UI bindings ---------- */
+    selectBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+    uploadArea.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+    ['dragenter', 'dragover'].forEach(ev => {
+      uploadArea.addEventListener(ev, (e) => {
+        e.preventDefault(); e.stopPropagation();
+        uploadArea.classList.add('drag-over');
+      });
+    });
+    ['dragleave', 'drop'].forEach(ev => {
+      uploadArea.addEventListener(ev, (e) => {
+        e.preventDefault(); e.stopPropagation();
+        uploadArea.classList.remove('drag-over');
+      });
+    });
+    uploadArea.addEventListener('drop', (e) => {
+      const files = e.dataTransfer?.files;
+      if (files && files.length) handleFiles(files);
+    });
+
+    // Paste desde portapapeles (Cmd/Ctrl+V) — heredado de imgToWeb
+    window.addEventListener('paste', (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      const files = [];
+      for (const it of items) {
+        if (it.type.startsWith('image/')) {
+          const f = it.getAsFile();
+          if (f) files.push(f);
+        }
+      }
+      if (files.length) handleFiles(files);
+    });
+
+    blurRange.addEventListener('input',         () => { blurValue.textContent  = blurRange.value; });
+    sharpRange.addEventListener('input',        () => { sharpValue.textContent = sharpRange.value + '%'; });
+    vignetteRange.addEventListener('input',     () => { vignetteValue.textContent = vignetteRange.value + '%'; });
+    vignetteStartRange.addEventListener('input',() => { vignetteStartValue.textContent = vignetteStartRange.value + '%'; });
+    seqRenameToggle.addEventListener('change', () => renderResults());
+
+    regenerateBtn.addEventListener('click', regenerateAll);
+    downloadAllBtn.addEventListener('click', downloadAllZip);
+
+    /* ---------- core ---------- */
+    async function handleFiles(fileList) {
+      const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+      if (!files.length) {
+        notify('no se reconocen imágenes válidas', 'error');
+        return;
+      }
+      settings.style.display = 'grid';
+      resultsC.style.display = 'block';
+      progressC.style.display = 'block';
+
+      const startIdx = state.items.length;
+      for (const f of files) {
+        state.items.push({
+          id: crypto.randomUUID(),
+          file: f,
+          originalUrl: URL.createObjectURL(f),
+          mirillaBlob: null,
+          mirillaUrl: null,
+          name: suggestName(f.name),
+        });
+      }
+
+      const toProcess = state.items.slice(startIdx);
+      await processAll(toProcess);
+      progressC.style.display = 'none';
+    }
+
+    async function processAll(items) {
+      const opts = readSettings();
+      let done = 0;
+      progressText.textContent = 'generando mirillas...';
+      progressCount.textContent = `0/${items.length}`;
+      progressFill.style.width = '0%';
+
+      for (const it of items) {
+        try {
+          const blob = await makeMirilla(it.file, opts);
+          if (it.mirillaUrl) URL.revokeObjectURL(it.mirillaUrl);
+          it.mirillaBlob = blob;
+          it.mirillaUrl  = URL.createObjectURL(blob);
+          it.outSize     = blob.size;
+        } catch (err) {
+          console.error(err);
+          notify(`error con ${it.file.name}`, 'error');
+        }
+        done++;
+        progressCount.textContent = `${done}/${items.length}`;
+        progressFill.style.width = `${(done / items.length) * 100}%`;
+      }
+      renderResults();
+    }
+
+    async function regenerateAll() {
+      if (!state.items.length) return;
+      progressC.style.display = 'block';
+      await processAll(state.items);
+      progressC.style.display = 'none';
+      notify(`regeneradas ${state.items.length} mirillas`, 'success');
+    }
+
+    function readSettings() {
+      return {
+        size:    parseInt(sizeSelect.value, 10),
+        quality: parseFloat(qualitySelect.value),
+        blur:    parseInt(blurRange.value, 10),
+        sharp:   parseInt(sharpRange.value, 10) / 100,
+        vign:    parseInt(vignetteRange.value, 10) / 100,
+        vignSt:  parseInt(vignetteStartRange.value, 10) / 100,
+      };
+    }
+
+    /* ---------- algoritmo de mirilla ---------- */
+    async function makeMirilla(file, opts) {
+      const { size, quality, blur, sharp, vign, vignSt } = opts;
+      const img = await loadImage(file);
+
+      const base = makeCanvas(size);
+      const bctx = base.getContext('2d');
+      const crop = Math.min(img.width, img.height);
+      const sx = (img.width  - crop) / 2;
+      const sy = (img.height - crop) / 2;
+      bctx.drawImage(img, sx, sy, crop, crop, 0, 0, size, size);
+
+      const blurCanvas = makeCanvas(size);
+      const blctx = blurCanvas.getContext('2d');
+      const blurPx = blur * (size / 1024);
+      blctx.filter = `blur(${blurPx}px)`;
+      blctx.drawImage(base, 0, 0);
+      blctx.filter = 'none';
+
+      // máscara radial: opaco en bordes, transparente en centro (radio "sharp")
+      blctx.globalCompositeOperation = 'destination-in';
+      const mask = blctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+      mask.addColorStop(sharp, 'rgba(0,0,0,0)');
+      mask.addColorStop(1,     'rgba(0,0,0,1)');
+      blctx.fillStyle = mask;
+      blctx.fillRect(0, 0, size, size);
+      blctx.globalCompositeOperation = 'source-over';
+
+      const out = makeCanvas(size);
+      const ctx = out.getContext('2d');
+      ctx.drawImage(base, 0, 0);
+      ctx.drawImage(blurCanvas, 0, 0);
+
+      if (vign > 0) {
+        const vg = ctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+        vg.addColorStop(vignSt, 'rgba(0,0,0,0)');
+        vg.addColorStop(1,      `rgba(0,0,0,${vign})`);
+        ctx.fillStyle = vg;
+        ctx.fillRect(0, 0, size, size);
+      }
+
+      URL.revokeObjectURL(img.src);
+      return await canvasToBlob(out, 'image/webp', quality);
+    }
+
+    function makeCanvas(size) { const c = document.createElement('canvas'); c.width = c.height = size; return c; }
+    function loadImage(file) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload  = () => resolve(img);
+        img.onerror = reject;
+        img.src = URL.createObjectURL(file);
+      });
+    }
+    function canvasToBlob(canvas, type, quality) {
+      return new Promise((resolve, reject) => {
+        canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob failed')), type, quality);
+      });
+    }
+
+    /* ---------- render ---------- */
+    function nameAtIndex(i, it) {
+      if (seqRenameToggle.checked) return `mirilla-${i + 1}`;
+      return it.name;
+    }
+
+    function renderResults() {
+      const seq = seqRenameToggle.checked;
+      resultCount.textContent = `${state.items.length} mirilla${state.items.length === 1 ? '' : 's'}`;
+      resultsList.innerHTML = '';
+      state.items.forEach((it, i) => {
+        const displayName = nameAtIndex(i, it);
+        const savings = it.mirillaBlob
+          ? (1 - it.mirillaBlob.size / it.file.size) * 100
+          : null;
+        const savClass = savings == null ? '' : (savings > 0 ? 'is-positive' : 'is-negative');
+        const savText  = savings == null ? '…' : (savings >= 0 ? `−${savings.toFixed(0)}%` : `+${(-savings).toFixed(0)}%`);
+
+        const card = document.createElement('div');
+        card.className = 'result-card';
+        card.innerHTML = `
+          <div class="preview-pair">
+            <div>
+              <span class="tag">original</span>
+              <img src="${it.originalUrl}" alt="original">
+            </div>
+            <div>
+              <span class="tag">mirilla</span>
+              <img src="${it.mirillaUrl || ''}" alt="mirilla">
+            </div>
+          </div>
+          <div class="card-info">
+            <div class="card-name">
+              <input type="text" value="${escapeHtml(displayName)}" data-id="${it.id}" ${seq ? 'disabled' : ''}>
+            </div>
+            <div class="card-stats">
+              <div class="stat-row">
+                <span class="stat-label">original</span>
+                <span class="stat-value">${formatBytes(it.file.size)}</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">mirilla</span>
+                <span class="stat-value">${it.mirillaBlob ? formatBytes(it.mirillaBlob.size) : '…'}</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">ahorro</span>
+                <span class="stat-value ${savClass}">${savText}</span>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn-download" data-download="${it.id}">descargar .webp</button>
+              <button class="btn-remove" data-remove="${it.id}" aria-label="quitar">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6"  x2="6"  y2="18"/>
+                  <line x1="6"  y1="6"  x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        `;
+        resultsList.appendChild(card);
+      });
+
+      resultsList.querySelectorAll('[data-download]').forEach(btn => {
+        btn.addEventListener('click', () => downloadOne(btn.dataset.download));
+      });
+      resultsList.querySelectorAll('[data-remove]').forEach(btn => {
+        btn.addEventListener('click', () => removeItem(btn.dataset.remove));
+      });
+      resultsList.querySelectorAll('input[data-id]').forEach(inp => {
+        inp.addEventListener('input', () => {
+          const it = state.items.find(x => x.id === inp.dataset.id);
+          if (it) it.name = inp.value;
+        });
+      });
+    }
+
+    function downloadOne(id) {
+      const idx = state.items.findIndex(x => x.id === id);
+      if (idx < 0) return;
+      const it = state.items[idx];
+      if (!it.mirillaBlob) return;
+      const finalName = ensureExt(nameAtIndex(idx, it), 'webp');
+      const a = document.createElement('a');
+      a.href = it.mirillaUrl;
+      a.download = finalName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    async function downloadAllZip() {
+      if (!state.items.length) return;
+      const zip = new JSZip();
+      const used = new Set();
+      state.items.forEach((it, i) => {
+        if (!it.mirillaBlob) return;
+        let n = ensureExt(nameAtIndex(i, it), 'webp');
+        // evitar colisiones
+        let k = 2;
+        const base = n.replace(/\.webp$/, '');
+        while (used.has(n)) n = `${base}-${k++}.webp`;
+        used.add(n);
+        zip.file(n, it.mirillaBlob);
+      });
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const url  = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'mirillas.zip';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      notify(`descargadas ${state.items.length} mirillas`, 'success');
+    }
+
+    function removeItem(id) {
+      const idx = state.items.findIndex(x => x.id === id);
+      if (idx < 0) return;
+      const it = state.items[idx];
+      URL.revokeObjectURL(it.originalUrl);
+      if (it.mirillaUrl) URL.revokeObjectURL(it.mirillaUrl);
+      state.items.splice(idx, 1);
+      renderResults();
+      if (state.items.length === 0) {
+        resultsC.style.display = 'none';
+        settings.style.display = 'none';
+      }
+    }
+
+    /* ---------- utils ---------- */
+    function suggestName(original) {
+      const base = original.replace(/\.[^.]+$/, '').trim();
+      return base || 'mirilla';
+    }
+    function ensureExt(name, ext) { return /\.[^.]+$/.test(name) ? name : `${name}.${ext}`; }
+    function formatBytes(n) {
+      if (n < 1024) return `${n} B`;
+      if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+      return `${(n / 1024 / 1024).toFixed(2)} MB`;
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[c]));
+    }
+    function notify(msg, kind = 'info') {
+      const n = document.createElement('div');
+      n.className = `notification notification-${kind}`;
+      n.textContent = msg;
+      document.body.appendChild(n);
+      requestAnimationFrame(() => n.classList.add('show'));
+      setTimeout(() => {
+        n.classList.remove('show');
+        setTimeout(() => n.remove(), 300);
+      }, 2400);
+    }
+  </script>
+</body>
+</html>

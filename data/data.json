@@ -1,0 +1,247 @@
+{
+  "config": {
+    "color_acento": "magenta",
+    "color_titulo": "red",
+    "idioma_defecto": "cat",
+    "idiomas": ["cat", "en"],
+    "titulo_braille": "pol roig",
+    "dominio": "polroigvalldosera.com",
+    "descripcion_seo": {
+      "cat": "Pol Roig Valldosera — dissenyador d'espai i artista multidisciplinari.",
+      "en": "Pol Roig Valldosera — space designer and multidisciplinary artist."
+    }
+  },
+
+  "i18n": {
+    "cat": { "ver_mas": "veure més", "leer_mas": "llegir més", "leer_menos": "tancar", "volver": "tornar", "idiomas": { "cat": "CAT", "en": "EN" } },
+    "en":  { "ver_mas": "view more", "leer_mas": "read more",  "leer_menos": "close",  "volver": "back",   "idiomas": { "cat": "CAT", "en": "EN" } }
+  },
+
+  "proyectos": [
+    {
+      "slug": "concierto-barroco",
+      "nombre": "Concierto Barroco",
+      "grupos": [
+        {
+          "slideshow": ["1.webp", "2.webp", "3.webp"],
+          "titulo": "Concierto Barroco",
+          "texto": [
+            {
+              "cat": "Adaptació de la novel·la d'Alejo Carpentier al cicle Escenes de L'Auditori. Pol Roig signa dramatúrgia, direcció d'escena, espai i vestuari al voltant d'un Mèxic del segle XVIII que s'obre com un món paral·lel.",
+              "en": "An adaptation of Alejo Carpentier's novel for L'Auditori's Escenes cycle. Pol Roig signs dramaturgy, stage direction, scenography and costume around an 18th-century Mexico that opens like a parallel world."
+            },
+            {
+              "cat": "Presentat el 2025, parteix de la novel·la homònima per construir un espai que hipnotitza entre la llum i la matèria. La direcció musical de Dani Espasa acompanya una escena pensada com a mirall, on l'espectador travessa una frontera cognitiva cap a un Mèxic virat a ficció.",
+              "en": "Presented in 2025, it departs from Carpentier's novel to build a space that hypnotises between light and matter. Dani Espasa's musical direction accompanies a scene conceived as a mirror, where the viewer crosses a cognitive border into a fictional Mexico."
+            }
+          ],
+          "texto_desplegable": [
+            {
+              "cat": "Direcció d'escena, espai i vestuari: Pol Roig Valldosera. Direcció musical: Dani Espasa. Producció: L'Auditori · Escenes. Estrenat a L'Auditori, Barcelona (2025).",
+              "en": "Stage direction, space and costume: Pol Roig Valldosera. Musical direction: Dani Espasa. Production: L'Auditori · Escenes. Premiered at L'Auditori, Barcelona (2025)."
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "slug": "eliza",
+      "nombre": "Eliza",
+      "grupos": [
+        {
+          "slideshow": ["1.webp", "2.webp", "3.webp"],
+          "titulo": "Eliza",
+          "texto": [
+            {
+              "cat": "Microòpera estrenada al Gran Teatre del Liceu dins el programa Oh!pera. Llibret de Pau Miró i partitura de Ferran Cruixent. Pol Roig signa la direcció d'escena.",
+              "en": "A micro-opera premiered at the Gran Teatre del Liceu within the Oh!pera programme. Libretto by Pau Miró and score by Ferran Cruixent. Pol Roig signs the stage direction."
+            },
+            {
+              "cat": "Eliza explora els límits de l'òpera contemporània. El 2024, en la seva primera incursió a la direcció operística, Pol Roig construeix un espai on la llum no il·lumina: qüestiona. La partitura de Cruixent i el llibret de Miró troben un escenari que es plega sobre el personatge per esdevenir cambra interior.",
+              "en": "Eliza explores the edges of contemporary opera. In 2024, in his first venture into operatic direction, Pol Roig builds a space where light doesn't illuminate: it questions. Cruixent's score and Miró's libretto find a stage that folds over the character, becoming an interior chamber."
+            }
+          ],
+          "texto_desplegable": [
+            {
+              "cat": "Direcció d'escena: Pol Roig Valldosera. Llibret: Pau Miró. Música: Ferran Cruixent. Estrenat al Gran Teatre del Liceu, Barcelona (2024).",
+              "en": "Stage direction: Pol Roig Valldosera. Libretto: Pau Miró. Music: Ferran Cruixent. Premiered at the Gran Teatre del Liceu, Barcelona (2024)."
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "slug": "ofrena-musical",
+      "nombre": "Ofrena Musical",
+      "grupos": [
+        {
+          "slideshow": ["1.webp", "2.webp", "3.webp"],
+          "titulo": "Ofrena Musical",
+          "texto": [
+            {
+              "cat": "Espai per a una lectura contemporània de l'Ofrena Musical de Bach. Un dispositiu on la geometria del so troba el seu doble lumínic.",
+              "en": "A space for a contemporary reading of Bach's Musical Offering. A device where the geometry of sound meets its luminous double."
+            },
+            {
+              "cat": "L'Ofrena Musical parteix del conjunt de cànons i fugues que Bach va dedicar a Frederic el Gran per construir una escenografia on la repetició i el contrapunt es fan espai. El dispositiu, mínim i precís, vol que l'espectador escolti amb els ulls.",
+              "en": "Musical Offering departs from the set of canons and fugues Bach dedicated to Frederick the Great to build a scenography where repetition and counterpoint become space. The device, minimal and precise, asks the viewer to listen with the eyes."
+            }
+          ],
+          "texto_desplegable": [
+            {
+              "cat": "Espai: Pol Roig Valldosera. Barcelona, 2024.",
+              "en": "Space: Pol Roig Valldosera. Barcelona, 2024."
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "slug": "escenografias",
+      "nombre": "Escenografies",
+      "grupos": [
+        {
+          "slideshow": ["teatro-1.webp", "teatro-2.webp", "teatro-3.webp"],
+          "titulo": { "cat": "Espais per al teatre", "en": "Spaces for theatre" },
+          "texto": [
+            {
+              "cat": "En el teatre, la pràctica de Pol Roig es mou entre la dramatúrgia de l'espai i la direcció d'art. Les seves col·laboracions amb Lucia del Greco (Pura Passió, Els Encantats), Toni Casares (Expulsió), Ester Guntín (Quiso Negro) o Paula Blanco (Nomen Nescio) mostren una manera d'entendre l'escena com a matèria primera: estructura que dona forma al text abans que el text la demani.",
+              "en": "In theatre, Pol Roig's practice moves between the dramaturgy of space and art direction. His collaborations with Lucia del Greco (Pura Passió, Els Encantats), Toni Casares (Expulsió), Ester Guntín (Quiso Negro) and Paula Blanco (Nomen Nescio) show a way of understanding the stage as raw material: a structure that shapes the text before the text demands it."
+            }
+          ],
+          "texto_desplegable": [
+            {
+              "cat": "Pura Passió (Temporada Alta, 2024), Els Encantats (Sala Beckett, 2023), Expulsió (Sala Beckett, 2025), Quiso Negro (Grec, 2024), Nomen Nescio (Teatre La Gleva, 2025).",
+              "en": "Pura Passió (Temporada Alta, 2024), Els Encantats (Sala Beckett, 2023), Expulsió (Sala Beckett, 2025), Quiso Negro (Grec, 2024), Nomen Nescio (Teatre La Gleva, 2025)."
+            }
+          ]
+        },
+        {
+          "slideshow": ["musica-1.webp"],
+          "titulo": { "cat": "Espais per a la música", "en": "Spaces for music" },
+          "texto": [
+            {
+              "cat": "A la música, l'espai no acompanya la cançó: la construeix. La gira Spanish Leather de Guitarricadelafuente va desplegar un dispositiu escènic on la llum i la matèria funcionaven com a instruments més del concert. La pràctica de Pol Roig en aquest terreny entén que un concert és també una imatge en moviment.",
+              "en": "In music, space doesn't accompany the song: it builds it. Guitarricadelafuente's Spanish Leather tour deployed a stage device where light and matter acted as another of the concert's instruments. Pol Roig's practice in this field understands a concert as a moving image."
+            }
+          ],
+          "texto_desplegable": [
+            {
+              "cat": "Spanish Leather, Guitarricadelafuente. Gira ibèrica, 2023.",
+              "en": "Spanish Leather, Guitarricadelafuente. Iberian tour, 2023."
+            }
+          ]
+        },
+        {
+          "slideshow": ["dansa-1.webp"],
+          "titulo": { "cat": "Espais per a la dansa", "en": "Spaces for dance" },
+          "texto": [
+            {
+              "cat": "En la dansa, el cos reclama un espai que no li faci ombra. La pràctica de Pol Roig en aquest camp proposa dispositius que són alhora paisatge i partitura: una arquitectura que es llegeix en el moviment. Biterna (IT Dansa, 2024) és un exemple d'aquest diàleg entre coreografia i matèria.",
+              "en": "In dance, the body demands a space that doesn't overshadow it. Pol Roig's practice in this field proposes devices that are at once landscape and score: an architecture to be read through movement. Biterna (IT Dansa, 2024) exemplifies this dialogue between choreography and matter."
+            }
+          ],
+          "texto_desplegable": [
+            {
+              "cat": "Biterna, amb Aleix Marínez i IT Dansa. Festival Dansaneu, 2024.",
+              "en": "Biterna, with Aleix Marínez and IT Dansa. Festival Dansaneu, 2024."
+            }
+          ]
+        },
+        {
+          "slideshow": ["passacaglia-1.webp"],
+          "titulo": "Passacaglia",
+          "texto": [
+            {
+              "cat": "Un espai cíclic per a una peça cíclica. La passacaglia com a forma de retorn: un baix que insisteix, una imatge que s'acumula. Treballa amb el gest musical del baix obstinat com a metàfora escènica: mateixa arquitectura, mateixa llum, mateix moviment; mai la mateixa imatge.",
+              "en": "A cyclical space for a cyclical piece. Passacaglia as a form of return: an insistent bass line, an image that accumulates. It works with the musical gesture of the ground bass as a stage metaphor: same architecture, same light, same movement; never the same image."
+            }
+          ],
+          "texto_desplegable": [
+            {
+              "cat": "Espai: Pol Roig Valldosera. Barcelona, 2024.",
+              "en": "Space: Pol Roig Valldosera. Barcelona, 2024."
+            }
+          ]
+        },
+        {
+          "slideshow": ["euroscoria-1.webp"],
+          "titulo": "Euroscoria",
+          "texto": [
+            {
+              "cat": "Euroscoria és una de les primeres col·laboracions escenogràfiques de Pol Roig. L'espai es construeix com una sala d'espera infinita, un no-lloc europeu on els cossos es neguen a aterrar.",
+              "en": "Euroscoria is one of Pol Roig's earliest scenographic collaborations. The space is built as an infinite waiting room, a European non-place where bodies refuse to land."
+            }
+          ],
+          "texto_desplegable": [
+            {
+              "cat": "Escenografia: Pol Roig Valldosera. Direcció: Nao Albet. Teatre Almeria, Barcelona (2021).",
+              "en": "Scenography: Pol Roig Valldosera. Direction: Nao Albet. Teatre Almeria, Barcelona (2021)."
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "slug": "bio",
+      "nombre": "Pol Roig Valldosera",
+      "grupos": [
+        {
+          "slideshow": ["1.webp", "2.webp", "3.webp"],
+          "titulo": "Pol Roig Valldosera",
+          "texto": [
+            {
+              "cat": "Pol Roig Valldosera (Barcelona, 2000) és dissenyador d'espai i artista multidisciplinari. Els seus espais sovint s'obren com mons paral·lels, on el joc amb la llum i la matèria busca hipnotitzar i transformar l'experiència cognitiva de l'espectador.",
+              "en": "Pol Roig Valldosera (Barcelona, 2000) is a space designer and multidisciplinary artist. His spaces often open like parallel worlds, where the play between light and matter seeks to hypnotise and transform the viewer's cognitive experience."
+            },
+            {
+              "cat": "Format en escenografia, en la seva pràctica ha experimentat més enllà del teatre i la dansa convencionals, en les interseccions del disseny espacial amb la direcció d'escena, la performance i la instal·lació, sempre amb un gran interès en el fet sonor i lumínic com a mitjans generadors de discurs independents.",
+              "en": "Trained in scenography, his practice has experimented beyond conventional theatre and dance, at the intersections of spatial design with stage direction, performance and installation, always deeply interested in the sonic and luminous as independent discourse-generating media."
+            }
+          ],
+          "texto_desplegable": [
+            {
+              "cat": "Com a escenògraf ha participat en projectes molt diversos, tant en música, destacant la gira Spanish Leather de Guitarricadelafuente, com en teatre, destacant Concierto Barroco (L'Auditori), Eliza (Gran Teatre del Liceu), Els Encantats (Sala Beckett) o Pura Passió (Temporada Alta).",
+              "en": "As a set designer he has worked on very diverse projects — in music, most notably Guitarricadelafuente's Spanish Leather tour; in theatre, Concierto Barroco (L'Auditori), Eliza (Gran Teatre del Liceu), Els Encantats (Sala Beckett) and Pura Passió (Temporada Alta)."
+            },
+            {
+              "cat": "Ha signat el pavelló català de la Prague Quadriennal of Performance Design and Space, amb una instal·lació interactiva titulada Chant of the Sybil.",
+              "en": "He has signed the Catalan pavilion of the Prague Quadriennial of Performance Design and Space with an interactive installation titled Chant of the Sybil."
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "slug": "otros-proyectos",
+      "nombre": "Altres projectes",
+      "grupos": [
+        {
+          "slideshow": ["1.webp", "2.webp", "3.webp"],
+          "titulo": { "cat": "Altres projectes", "en": "Other projects" },
+          "texto": [
+            {
+              "cat": "Una selecció de treballs que no caben en cap categoria estricta: instal·lacions, accions performatives, pavellons i peces editorials. El denominador comú és l'atenció a l'espai com a experiència cognitiva.",
+              "en": "A selection of works that don't fit any strict category: installations, performative actions, pavilions and editorial pieces. The common denominator is attention to space as a cognitive experience."
+            },
+            {
+              "cat": "Entre ells, el pavelló català de la Prague Quadriennal of Performance Design and Space amb la instal·lació interactiva Chant of the Sybil (2023).",
+              "en": "Among them, the Catalan pavilion at the Prague Quadriennial of Performance Design and Space with the interactive installation Chant of the Sybil (2023)."
+            }
+          ],
+          "texto_desplegable": [
+            {
+              "cat": "Autoria: Pol Roig Valldosera. Diversos contextos i col·laboradors.",
+              "en": "Authorship: Pol Roig Valldosera. Various contexts and collaborators."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

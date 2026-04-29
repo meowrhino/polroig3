@@ -1,0 +1,425 @@
+/* ============================================================
+   polroig3 — estilo único
+   mobile-first, sin frameworks. Todo el branding pasa por
+   --color-acento y --color-titulo (inyectables desde data.json).
+   ============================================================ */
+
+/* -------------------- 0. Reset mínimo --------------------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+img        { display: block; max-width: 100%; }
+button     { background: none; border: 0; cursor: pointer; color: inherit; font: inherit; }
+a          { color: inherit; text-decoration: none; }
+
+
+/* -------------------- 1. Tokens --------------------------- */
+:root {
+  --bg:            #000000;
+  --fg:            #ffffff;
+  --muted:         #cccccc;
+
+  --color-acento:  magenta;        /* pisable desde data.json -> config.color_acento */
+  --color-titulo:  red;            /* pisable desde data.json -> config.color_titulo */
+
+  --font-serif:    'Times New Roman', Times, serif;
+
+  --ease-soft:     cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring:   cubic-bezier(0.34, 1.22, 0.64, 1);
+
+  --swap-dur:      1100ms;     /* mirilla spin + iris-grow */
+  --snap-dur:      350ms;      /* snap de la rueda */
+
+  /* Geometría de la rueda — se sobreescribe en desktop */
+  --wheel-size:    min(82vw, 50dvh);
+  --mirilla-size:  46%;
+  --radius-ratio:  0.92;
+
+  /* Reparto vertical de la home (suma 100dvh) */
+  --h-header:      8dvh;
+  --h-wheel:       50dvh;
+  --h-preview:     32dvh;
+  --h-footer:      10dvh;
+}
+@media (min-width: 900px) {
+  :root {
+    --wheel-size:   min(60vmin, 540px);
+    --mirilla-size: 32%;
+  }
+}
+
+* { font-family: var(--font-serif); }
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+
+/* -------------------- 2. Layout root --------------------- */
+.app {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* la home no scrollea; la página de proyecto sí */
+body[data-view="home"]    { overflow: hidden; }
+body[data-view="proyecto"] { overflow: auto; }
+
+
+/* -------------------- 3. Header (braille) ---------------- */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--h-header);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 0 1.25rem;
+  background: var(--bg);
+}
+.header__volver {
+  margin-right: auto;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  color: var(--color-acento);
+  transition: opacity 0.2s var(--ease-soft);
+}
+.header__volver:hover { opacity: 0.65; }
+
+.braille {
+  font-size: clamp(1rem, 3.6dvh, 1.75rem);
+  letter-spacing: 0.08em;
+  color: var(--color-titulo);
+  user-select: none;
+  cursor: default;          /* no clicable */
+}
+
+
+/* -------------------- 4. Home: rueda --------------------- */
+.home {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.wheel-stage {
+  position: relative;
+  flex: 0 0 var(--h-wheel);
+  display: grid;
+  place-items: center;
+  touch-action: none;       /* el drag de la rueda lo gestionamos en JS */
+}
+
+.wheel {
+  position: relative;
+  width: var(--wheel-size);
+  height: var(--wheel-size);
+  border-radius: 50%;
+  transition: transform var(--snap-dur) var(--ease-spring);
+  will-change: transform;
+}
+.wheel.is-dragging { transition: none; }
+
+/* Slot: ancla puntual (0×0) en la posición radial. La rotación K*30 +
+   translate(-R) coloca este punto en su sitio. */
+.wheel__slot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform:
+    rotate(calc(var(--i) * 30deg))
+    translate(0, calc(-1 * var(--wheel-size) / 2 * var(--radius-ratio)));
+  transform-origin: 0 0;
+}
+
+/* Item: el botón clickable. Vive dentro del slot, se centra sobre él y
+   rota -90º para que el texto salga como un rayo de sol del centro
+   hacia fuera (en los slots 0..5 — la mitad derecha — se lee
+   naturalmente de izquierda a derecha cuando inclinas la cabeza). */
+.wheel__item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  transform-origin: center;
+  font-size: clamp(0.65rem, 1.55dvh, 0.95rem);
+  letter-spacing: 0.04em;
+  color: var(--fg);
+  white-space: nowrap;
+  opacity: 0.55;
+  cursor: pointer;
+  padding: 0.25rem 0.4rem;
+  transition: opacity 0.3s var(--ease-soft), color 0.3s var(--ease-soft);
+}
+.wheel__item:hover         { opacity: 0.9; }
+.wheel__item.is-active     { opacity: 1; color: var(--color-acento); }
+
+/* Selector triangular a la derecha (3 o'clock) */
+.wheel__selector {
+  position: absolute;
+  top: 50%;
+  right: calc(50% - var(--wheel-size) / 2 - 0.25rem);
+  transform: translate(0, -50%);
+  width: 0;
+  height: 0;
+  border-top:    0.6rem solid transparent;
+  border-bottom: 0.6rem solid transparent;
+  border-right:  0.7rem solid var(--color-acento);  /* punta hacia la rueda */
+  pointer-events: none;
+}
+
+
+/* -------------------- 5. Mirilla ------------------------- */
+.mirilla {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--mirilla-size);
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  overflow: hidden;
+  /* Fallback visual mientras no haya mirilla.webp generada: gradiente
+     radial discreto. Si la imagen carga, se superpone encima. */
+  background:
+    radial-gradient(circle at 50% 50%,
+      #2a2a2a 0%,
+      #1a1a1a 55%,
+      #000000 100%);
+  display: block;
+  isolation: isolate;        /* aislar ::after para clip-path */
+  transition: box-shadow 0.25s var(--ease-soft);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
+}
+.mirilla:hover { box-shadow: 0 0 0 2px var(--color-acento); }
+
+.mirilla__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Si la imagen falla (no existe aún), la ocultamos para que se vea el
+   gradiente del fondo. */
+.mirilla__img:not([src]),
+.mirilla__img[src=""] { display: none; }
+
+/* Capa que aparece encima durante el swap, con la imagen siguiente.
+   La animación iris-grow descubre la nueva imagen desde el centro. */
+.mirilla::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--next-img, none);
+  background-size: cover;
+  background-position: center;
+  clip-path: circle(0% at 50% 50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Estado swap: spin de toda la mirilla + iris-grow del overlay */
+.mirilla.is-swapping {
+  animation: mirilla-spin var(--swap-dur) var(--ease-soft);
+}
+.mirilla.is-swapping::after {
+  animation: iris-grow 950ms 150ms var(--ease-soft) forwards;
+}
+@keyframes mirilla-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@keyframes iris-grow {
+  from { clip-path: circle(0%   at 50% 50%); }
+  to   { clip-path: circle(75%  at 50% 50%); }
+}
+
+
+/* -------------------- 6. Preview de texto --------------- */
+.preview {
+  flex: 0 0 var(--h-preview);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: opacity 250ms var(--ease-soft);
+}
+.preview.is-fading { opacity: 0; }
+
+.preview__inner {
+  max-width: 32rem;
+  font-size: clamp(1rem, 2.2dvh, 1.15rem);
+  line-height: 1.45;
+}
+
+.preview__text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.preview__more {
+  color: var(--color-acento);
+  white-space: nowrap;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s var(--ease-soft);
+}
+.preview__more:hover { border-color: var(--color-acento); }
+
+
+/* -------------------- 7. Footer (idiomas) --------------- */
+.footer {
+  flex: 0 0 var(--h-footer);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg);
+}
+
+.lang__btn {
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  padding: 0.25rem 0.4rem;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s var(--ease-soft), border-color 0.2s var(--ease-soft);
+}
+.lang__btn:hover            { color: var(--fg); }
+.lang__btn.is-active        { color: var(--color-acento); border-bottom-color: var(--color-acento); }
+.lang__sep                  { color: var(--muted); user-select: none; }
+
+
+/* -------------------- 8. Página de proyecto ------------ */
+.project {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 1.25rem 3rem;
+}
+.project__inner {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.grupo { display: flex; flex-direction: column; gap: 1.25rem; }
+.grupo__titulo {
+  font-size: clamp(1.4rem, 3dvh, 2rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--color-acento);
+}
+.grupo__parrafo {
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+
+/* -------------------- 9. Slideshow ---------------------- */
+.slideshow {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #111;
+  user-select: none;
+}
+.slideshow__track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transform: translateX(calc(var(--i, 0) * -100%));
+  transition: transform 600ms var(--ease-soft);
+  will-change: transform;
+}
+.slideshow__slide {
+  flex: 0 0 100%;
+  height: 100%;
+}
+.slideshow__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.slideshow__btn {
+  position: absolute;
+  top: 0;
+  width: 10%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--color-acento);
+  opacity: 0.35;
+  transition: opacity 0.2s var(--ease-soft);
+  background: linear-gradient(to right, rgba(0,0,0,0.6), transparent);
+}
+.slideshow__btn--prev { left: 0;  }
+.slideshow__btn--next { right: 0; background: linear-gradient(to left, rgba(0,0,0,0.6), transparent); }
+.slideshow__btn:hover           { opacity: 1; }
+.slideshow__btn[disabled]       { opacity: 0; pointer-events: none; }
+.slideshow:hover .slideshow__btn:not([disabled]) { opacity: 0.85; }
+
+
+/* -------------------- 10. Texto desplegable ------------ */
+.desplegable { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.desplegable__body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 500ms var(--ease-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.desplegable__body p { font-size: 1.05rem; line-height: 1.55; }
+
+.desplegable__toggle {
+  align-self: flex-start;
+  font-size: 0.95rem;
+  color: var(--color-acento);
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1px;
+  transition: border-color 0.2s var(--ease-soft);
+}
+.desplegable__toggle:hover { border-bottom-color: var(--color-acento); }
+
+
+/* -------------------- 11. Iris overlay ------------------ */
+/* Cubre toda la pantalla en negro y aplica una máscara radial
+   con un agujero animado por JS. Cuando #iris.is-active, intercepta
+   los clicks; el resto del tiempo es invisible. */
+.iris {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 100;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 9999px, black 9999px);
+          mask-image: radial-gradient(circle at 50% 50%, transparent 9999px, black 9999px);
+}
+.iris.is-active { pointer-events: auto; }
+
+
+/* -------------------- 12. Reduced motion --------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
